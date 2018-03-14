@@ -1,0 +1,13 @@
+
+Earliest deadline:
+1. The system call "signalinfo" takes as argument a deadline, expressed in ticks from the time of the call, and returns deadline + total time since boot.
+2. add int deadline in struct proc in proc.h (modifying process control block)
+3. each process in PCB is given some deadline. Sorting is done inside scheduler to arrange processes on the basis of their increasing deadlines .
+4. shell and other OS program should have least deadline( higher priority) and should always execute unless any other process
+5. process sending to scheduler will be decided on the basis of min. deadline.
+6. Processes with deadlines should never have their quantum expire.
+7. Theoretically, Before a process has reached its deadline, it must call signalinfo again with a new value, either 0 or a new value of the deadline. A process with a deadline in the past can be treated by the scheduler as a process with no deadline. the deadline given to signalinfo is a relative one, and the system must (logically) decrement each real-time process's deadline every clock tick, until the deadline reaches zero, at which point the process is assumed to have completed its work (normally the process will call signalinfo before then to change the deadline). 
+8. Note that with this scheme the system has to decrement the deadline for each realtime process on every clock tick. We have added the given deadline to the realtime variable, available from get_uptime(), and store the resulting value in the process table. This means the scheduler can simply compare deadlines when inserting a process into the queues, and never has to change or decrement the value.
+9.In theory, processes with a deadline in the past (deadline < realtime if realtime is added to the deadline parameter) should have their deadline set to zero and be scheduled in normal round-robin order. It is done when each user process is alloted only deadline time to execute.
+
+NOTE: Real time user processes should be executed ahead of user processes for xv6 to function smoothly.
